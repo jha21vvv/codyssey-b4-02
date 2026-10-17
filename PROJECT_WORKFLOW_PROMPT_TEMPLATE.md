@@ -161,7 +161,7 @@ k, v = line.split("=", 1)
 | **1. 계획** | 요구사항 분해, 제약 조건(라이브러리 금지 등) 명문화 | `PLAN.md` | 사용자 사전 승인 필수 |
 | **2. 구현** | 책임 분리(SRP), 안전한 기본값, 예외 방어 | `src/*.py` | 외부 패키지 Zero 의존성 원칙 |
 | **3. 테스트** | Zero-Cost Mock 테스트, 0.01초 이내 초고속 검증 | `tests/test_*.py` | 통과율 100% 무결성 입증 |
-| **4. 검증 & 시각화** | 요구사항 1:1 매핑표, 주니어 일상 비유, Matplotlib 다이어그램 | `스터디.md`, `diagrams/*.png` | `matplotlib` 기반 실제 PNG 이미지 생성 필수 |
+| **4. 검증 & 시각화** | 요구사항 1:1 매핑표, 주니어 일상 비유, Matplotlib 다이어그램 | `스터디.md`, `diagrams/*.png` | `matplotlib` 기반 실제 PNG 이미지 생성 및 **저장소 상대경로(`diagrams/*.png`) 임베딩 필수 (GitHub 렌더링 깨짐 방어)** |
 | **5. 고도화 & 리포트** | 엣지 케이스 방어, 평가자 시각적 러너, README 검증 공간 | `REPORT.md`, `scripts/verify_requirements.py` | 터미널/JSON 시각화 출력 공간 및 README 명시 |
 | **6. NotebookLM** | 업로드 소스 목록 최상단 명시, 순수 소스 1개 텍스트화, 팟캐스트 프롬프트 | `NOTEBOOKLM_FULL_SOURCE.txt`, `NOTEBOOKLM_GUIDE.md` | 문서 최상단에 NotebookLM 소스 문서 목록 필수 수록 |
 | **7. 내재화** | [1차 기술] + [2차 비유] 전 라인 2단 주석화 | 소스 코드 전체 | 기존 코드 100% 보존 |
