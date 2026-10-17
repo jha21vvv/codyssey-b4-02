@@ -1,0 +1,18 @@
+{
+  "experiment": "Deadlock Diagnosis & Concurrency Control",
+  "timestamp": "2026-10-17T14:52:54+09:00",
+  "before": {
+    "multi_thread_enable": true,
+    "pid_status": "YES (PID: 710)",
+    "deadlock_detected": true,
+    "cpu_stagnant": true,
+    "last_log": "[2026-10-17 14:52:48] [Thread-WorkerA] WAITING for lock_beta... BLOCKED"
+  },
+  "after": {
+    "multi_thread_enable": false,
+    "pid_status": "YES (PID: 741)",
+    "deadlock_detected": false,
+    "cpu_stagnant": false,
+    "last_log": "[2026-10-17 14:52:52] [Safe-Worker] All locks processed sequentially without deadlock."
+  }
+}
