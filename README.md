@@ -9,30 +9,30 @@
 
 | 문서 및 산출물 | 내용 요약 | 링크 |
 | :--- | :--- | :---: |
-| **마스터 계획서** | 7단계 워크플로우 및 미션 요구사항 분해 계획 | [PLAN.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/PLAN.md) |
-| **가상환경 셋업 가이드** | 코드로 남지 않는 터미널 명령어 및 환경변수 완전 기록부 | [ENVIRONMENT_SETUP_GUIDE.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/ENVIRONMENT_SETUP_GUIDE.md) |
-| **종합 스터디 문서** | 과제 전문 100% 수록, 요구사항 대조, 주니어 눈높이 OS 비유 | [스터디.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/스터디.md) |
-| **종합 기술 리포트** | SRE/시스템 엔지니어링 관점의 장애 분석 총괄 보고서 | [REPORT.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/REPORT.md) |
-| **GitHub Issue 1** | `[Bug] OOM Crash` - MemoryGuard 임계치 초과 분석 | [issues/01_oom_crash_issue.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/issues/01_oom_crash_issue.md) |
-| **GitHub Issue 2** | `[Bug] CPU Latency` - CPU 과점유 및 Watchdog SIGTERM 분석 | [issues/02_cpu_latency_issue.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/issues/02_cpu_latency_issue.md) |
-| **GitHub Issue 3** | `[Bug] Deadlock` - 다중 스레드 상호 락 점유 대기 분석 | [issues/03_deadlock_issue.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/issues/03_deadlock_issue.md) |
-| **NotebookLM 가이드** | 팟캐스트 오디오 오버뷰 기획서 및 시스템 프롬프트 | [NOTEBOOKLM_GUIDE.md](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/NOTEBOOKLM_GUIDE.md) |
+| **마스터 계획서** | 7단계 워크플로우 및 미션 요구사항 분해 계획 | [PLAN.md](PLAN.md) |
+| **가상환경 셋업 가이드** | 코드로 남지 않는 터미널 명령어 및 환경변수 완전 기록부 | [ENVIRONMENT_SETUP_GUIDE.md](ENVIRONMENT_SETUP_GUIDE.md) |
+| **종합 스터디 문서** | 과제 전문 100% 수록, 요구사항 대조, 주니어 눈높이 OS 비유 | [스터디.md](스터디.md) |
+| **종합 기술 리포트** | SRE/시스템 엔지니어링 관점의 장애 분석 총괄 보고서 | [REPORT.md](REPORT.md) |
+| **GitHub Issue 1** | `[Bug] OOM Crash` - MemoryGuard 임계치 초과 분석 | [issues/01_oom_crash_issue.md](issues/01_oom_crash_issue.md) |
+| **GitHub Issue 2** | `[Bug] CPU Latency` - CPU 과점유 및 Watchdog SIGTERM 분석 | [issues/02_cpu_latency_issue.md](issues/02_cpu_latency_issue.md) |
+| **GitHub Issue 3** | `[Bug] Deadlock` - 다중 스레드 상호 락 점유 대기 분석 | [issues/03_deadlock_issue.md](issues/03_deadlock_issue.md) |
+| **NotebookLM 가이드** | 팟캐스트 오디오 오버뷰 기획서 및 시스템 프롬프트 | [NOTEBOOKLM_GUIDE.md](NOTEBOOKLM_GUIDE.md) |
 
 ---
 
 ## 🏗️ 고해상도 시스템 아키텍처 다이어그램
 
 ### 1. 시스템 전체 아키텍처 & 관제 흐름도
-![System Architecture](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/diagrams/01_system_architecture_overview.png)
+![System Architecture](diagrams/01_system_architecture_overview.png)
 
 ### 2. OOM MemoryGuard 메커니즘
-![OOM Mechanism](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/diagrams/02_oom_memory_leak_mechanism.png)
+![OOM Mechanism](diagrams/02_oom_memory_leak_mechanism.png)
 
 ### 3. CPU Watchdog 보호 메커니즘
-![CPU Watchdog](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/diagrams/03_cpu_watchdog_mechanism.png)
+![CPU Watchdog](diagrams/03_cpu_watchdog_mechanism.png)
 
 ### 4. Deadlock 순환 대기 모델 (코프먼 4대 조건)
-![Deadlock Model](file:///c:/Users/안재현/Documents/24_code/2609_codyssey/codyssey-b4-02/diagrams/04_deadlock_circular_wait.png)
+![Deadlock Model](diagrams/04_deadlock_circular_wait.png)
 
 ---
 
