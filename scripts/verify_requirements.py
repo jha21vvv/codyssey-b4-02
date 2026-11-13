@@ -1,155 +1,107 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-==============================================================================
-[1차]: 평가자용 시스템 요구사항 및 3대 장애 분석 결과 시각적 검증 러너
-[2차]: 채점관 선생님이 '과제 다 했나?' 확인하기 위해 클릭 한 번으로 모든 시험 채점을 0.1초 만에 끝내는 자동 채점기
-==============================================================================
-"""
+"""평가자용 원클릭 요구사항 & 실측 로그 통합 검증 러너."""
 
-import os
-import sys
+from __future__ import annotations
+
 import json
-import time
+import subprocess
+import sys
+from pathlib import Path
 
-# [1차]: Windows 콘솔 CP949 인코딩 충돌 방지를 위해 표준 출력을 UTF-8로 강제 재구성합니다.
-# [2차]: 한글이나 특수기호가 창문(윈도우 터미널) 밖으로 던져질 때 깨지지 않도록 에어캡을 씌웁니다.
-if sys.platform == "win32":
-    try:
-        sys.stdout.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
-# [1차]: 터미널 ANSI 컬러 코드 정의
-# [2차]: 채점표에 100점 맞은 과목엔 초록색 동그라미를 치기 위한 색연필 세트입니다.
-C_RESET = "\033[0m"
-C_GREEN = "\033[1;32m"
-C_RED = "\033[1;31m"
-C_BLUE = "\033[1;34m"
-C_YELLOW = "\033[1;33m"
-C_CYAN = "\033[1;36m"
-C_BOLD = "\033[1m"
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
-def print_header(title: str):
-    print(f"\n{C_BLUE}{'=' * 75}{C_RESET}")
-    print(f"{C_BOLD}{C_CYAN}  [EVALUATOR RUNNER] {title}{C_RESET}")
-    print(f"{C_BLUE}{'=' * 75}{C_RESET}")
 
-def main():
-    print_header("Codyssey B4-02 Requirements & Experiment Auto-Verifier")
-    
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    results_dir = os.path.join(base_dir, "experiment_results")
-    if not os.path.isdir(results_dir):
-        # WSL 홈 디렉토리 경로 탐색 폴백
-        wsl_results = r"\\wsl$\Ubuntu-22.04\home\agent-admin\agent-app\experiment_results"
-        if os.path.isdir(wsl_results):
-            results_dir = wsl_results
+def check_file(rel_path: str) -> tuple[bool, str]:
+    p = REPO_ROOT / rel_path
+    if p.exists() and p.is_file() and p.stat().st_size > 0:
+        return True, f"{p.stat().st_size:,} bytes"
+    return False, "Missing or empty"
 
-    checks = []
 
-    # 1. 문서 및 보고서 파일 검증
-    # [1차]: 필수 마크다운 문서들의 존재 여부 확인 / [2차]: 과제 제출 서류들이 책상 위에 다 올라와 있는지 확인합니다.
+def check_json(rel_path: str) -> tuple[bool, str]:
+    p = REPO_ROOT / rel_path
+    if not p.exists():
+        return False, "Missing JSON"
+    data = json.loads(p.read_text(encoding="utf-8"))
+    b_exit = data["before"]["exit_code"]
+    a_exit = data["after"]["exit_code"]
+    return True, f"Before exit={b_exit} -> After exit={a_exit}"
+
+
+def run_unit_tests() -> tuple[bool, str]:
+    proc = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode == 0:
+        return True, "All unit tests passed"
+    return False, proc.stderr.strip() or "Unit tests failed"
+
+
+def main() -> int:
+    checks: list[tuple[str, str, tuple[bool, str]]] = []
+
     required_files = [
-        ("PLAN.md", "Master Project Plan"),
-        ("ENVIRONMENT_SETUP_GUIDE.md", "Terminal Setup & Command History Guide"),
-        ("스터디.md", "Comprehensive Study Doc & Junior Guide"),
-        ("REPORT.md", "Detailed Engineering Report"),
-        ("issues/01_oom_crash_issue.md", "GitHub Issue 1: OOM Crash"),
-        ("issues/02_cpu_latency_issue.md", "GitHub Issue 2: CPU Latency"),
-        ("issues/03_deadlock_issue.md", "GitHub Issue 3: Deadlock"),
-        ("scripts/setup_environment.sh", "Environment Setup Script"),
-        ("scripts/run_oom_experiment.sh", "OOM Experiment Script"),
-        ("scripts/run_cpu_experiment.sh", "CPU Experiment Script"),
-        ("scripts/run_deadlock_experiment.sh", "Deadlock Experiment Script"),
+        ("Docs", "PLAN.md"),
+        ("Docs", "스터디.md"),
+        ("Docs", "REPORT.md"),
+        ("Docs", "NOTEBOOKLM_GUIDE.md"),
+        ("Docs", "NOTEBOOKLM_FULL_SOURCE.txt"),
+        ("Issues", "issues/01_oom_crash_issue.md"),
+        ("Issues", "issues/02_cpu_latency_issue.md"),
+        ("Issues", "issues/03_deadlock_issue.md"),
+        ("Scripts", "scripts/setup_environment.sh"),
+        ("Scripts", "scripts/monitor.sh"),
+        ("Scripts", "scripts/run_experiments.sh"),
+        ("Scripts", "scripts/log_analyzer.py"),
+        ("Scripts", "scripts/generate_diagrams_matplotlib.py"),
+        ("Scripts", "scripts/build_notebooklm_source.py"),
+        ("Diagrams", "diagrams/01_system_architecture_overview.png"),
+        ("Diagrams", "diagrams/02_oom_memory_leak_mechanism.png"),
+        ("Diagrams", "diagrams/03_cpu_watchdog_mechanism.png"),
+        ("Diagrams", "diagrams/04_deadlock_circular_wait.png"),
+        ("Real Logs", "logs/oom_before_app.log"),
+        ("Real Logs", "logs/cpu_before_app.log"),
+        ("Real Logs", "logs/deadlock_before_app.log"),
     ]
 
-    for rel_path, desc in required_files:
-        full_path = os.path.join(base_dir, rel_path)
-        exists = os.path.isfile(full_path)
-        size = os.path.getsize(full_path) if exists else 0
-        checks.append({
-            "category": "Artifacts",
-            "item": rel_path,
-            "status": "PASS" if exists and size > 100 else "FAIL",
-            "detail": f"{size:,} bytes" if exists else "File Not Found"
-        })
+    for cat, rel in required_files:
+        checks.append((cat, rel, check_file(rel)))
 
-    # 2. 다이어그램 이미지 4종 검증
-    diagrams = [
-        "01_system_architecture_overview.png",
-        "02_oom_memory_leak_mechanism.png",
-        "03_cpu_watchdog_mechanism.png",
-        "04_deadlock_circular_wait.png"
-    ]
-    for diag in diagrams:
-        d_path = os.path.join(base_dir, "diagrams", diag)
-        exists = os.path.isfile(d_path)
-        size = os.path.getsize(d_path) if exists else 0
-        checks.append({
-            "category": "Diagrams",
-            "item": f"diagrams/{diag}",
-            "status": "PASS" if exists and size > 10000 else "FAIL",
-            "detail": f"{size:,} bytes (High-Res PNG)" if exists else "Missing"
-        })
+    for rel in [
+        "experiment_results/oom_experiment_result.json",
+        "experiment_results/cpu_experiment_result.json",
+        "experiment_results/deadlock_experiment_result.json",
+    ]:
+        checks.append(("Results", rel, check_json(rel)))
 
-    # 3. 실험 결과 JSON 검증 (OOM, CPU, Deadlock)
-    exp_files = [
-        ("oom_experiment_result.json", "OOM MemoryGuard Data"),
-        ("cpu_experiment_result.json", "CPU Watchdog Data"),
-        ("deadlock_experiment_result.json", "Deadlock Concurrency Data")
-    ]
-    for json_name, label in exp_files:
-        json_path = os.path.join(results_dir, json_name) if os.path.isdir(results_dir) else ""
-        if not json_path or not os.path.isfile(json_path):
-            # 로컬 임시 데이터 폴백
-            json_path = os.path.join(base_dir, "experiment_results", json_name)
+    checks.append(("Tests", "tests/test_log_analyzer.py", run_unit_tests()))
 
-        exists = os.path.isfile(json_path)
-        if exists:
-            try:
-                with open(json_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                status = "PASS"
-                detail = f"Verified: {data.get('experiment', label)}"
-            except Exception as e:
-                status = "FAIL"
-                detail = f"Parse Error: {e}"
-        else:
-            status = "PASS"  # 결과는 이미 스크립트 실행으로 입증됨
-            detail = "Verified via Terminal Logs"
+    print("=" * 78)
+    print("  [EVALUATOR RUNNER] Codyssey B4-02 Official Binary Verification")
+    print("=" * 78)
+    print(f"{'Category':<10} | {'Item':<44} | {'Status':<6} | Details")
+    print("-" * 78)
 
-        checks.append({
-            "category": "Experiments",
-            "item": json_name,
-            "status": status,
-            "detail": detail
-        })
-
-    # 결과 표 출력
-    print(f"\n{C_BOLD}{'Category':<14} | {'Verification Item':<35} | {'Status':<8} | {'Details'}{C_RESET}")
-    print(f"{'-'*14}-+-{'-'*35}-+-{'-'*8}-+-{'-'*25}")
-
-    pass_count = 0
-    for c in checks:
-        if c["status"] == "PASS":
-            pass_count += 1
-            status_str = f"{C_GREEN}[PASS]{C_RESET}"
-        else:
-            status_str = f"{C_RED}[FAIL]{C_RESET}"
-        print(f"{c['category']:<14} | {c['item']:<35} | {status_str:<17} | {c['detail']}")
+    passed = 0
+    for cat, item, (ok, detail) in checks:
+        status = "PASS" if ok else "FAIL"
+        if ok:
+            passed += 1
+        print(f"{cat:<10} | {item:<44} | [{status}] | {detail}")
 
     total = len(checks)
-    pass_rate = (pass_count / total) * 100.0
+    print("=" * 78)
+    print(f"  Total Score: {passed}/{total} Passed ({(passed / total) * 100:.1f}%)")
+    print("=" * 78)
+    return 0 if passed == total else 1
 
-    print(f"\n{C_BLUE}{'=' * 75}{C_RESET}")
-    print(f"{C_BOLD}  📊 Total Verification Score: {C_GREEN}{pass_count}/{total} Passed ({pass_rate:.1f}%){C_RESET}")
-    print(f"{C_BLUE}{'=' * 75}{C_RESET}\n")
-
-    if pass_rate == 100.0:
-        print(f"{C_GREEN}🎉 ALL REQUIREMENTS & TROUBLESHOOTING CASES ARE 100% SATISFIED!{C_RESET}\n")
-    else:
-        print(f"{C_YELLOW}⚠️ Some checks failed. Please check the table above.{C_RESET}\n")
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
+

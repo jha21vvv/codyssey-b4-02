@@ -1,18 +1,50 @@
 {
-  "experiment": "OOM Crash & MemoryGuard",
-  "timestamp": "2026-10-17T14:50:38+09:00",
+  "experiment": "oom",
+  "target_binary": "agent-leak-app-x86",
   "before": {
-    "memory_limit_mb": 60,
-    "survival_duration_sec": 6.80,
-    "peak_rss_mb": 61,
     "exit_code": 137,
-    "termination_log": "[2026-10-17 14:50:11] [MemoryGuard] Memory limit exceeded: current 64.86MB > limit 60MB | [MemoryGuard] SELF-TERMINATED by MemoryGuard policy to prevent OS crash"
+    "duration_sec": 18.0,
+    "app": {
+      "line_count": 10,
+      "peak_heap_mb": 150,
+      "peak_internal_load_pct": 0.0,
+      "oom_self_terminated": true,
+      "memory_cache_flushed": false,
+      "watchdog_sigterm": false,
+      "cooldown_detected": false,
+      "deadlock_detected": false,
+      "healthy_completed": false
+    },
+    "monitor": {
+      "samples": 17,
+      "peak_rss_mb": 142,
+      "min_rss_mb": 2,
+      "peak_cpu_pct": 7.0,
+      "max_log_idle_sec": 3,
+      "process_down_detected": true
+    }
   },
   "after": {
-    "memory_limit_mb": 200,
-    "survival_duration_sec": 25.19,
-    "peak_rss_mb": 202,
-    "exit_code": 137,
-    "termination_log": "[2026-10-17 14:50:38] [MemoryGuard] Memory limit exceeded: current 202.87MB > limit 200MB | [MemoryGuard] SELF-TERMINATED by MemoryGuard policy to prevent OS crash"
+    "exit_code": 124,
+    "duration_sec": 36.0,
+    "app": {
+      "line_count": 47,
+      "peak_heap_mb": 275,
+      "peak_internal_load_pct": 30.0,
+      "oom_self_terminated": false,
+      "memory_cache_flushed": false,
+      "watchdog_sigterm": false,
+      "cooldown_detected": true,
+      "deadlock_detected": false,
+      "healthy_completed": true
+    },
+    "monitor": {
+      "samples": 35,
+      "peak_rss_mb": 292,
+      "min_rss_mb": 2,
+      "peak_cpu_pct": 6.0,
+      "max_log_idle_sec": 3,
+      "process_down_detected": false
+    }
   }
 }

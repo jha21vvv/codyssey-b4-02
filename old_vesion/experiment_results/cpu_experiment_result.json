@@ -1,0 +1,18 @@
+{
+  "experiment": "CPU Spike & Watchdog Protection",
+  "timestamp": "2026-10-17T14:52:42+09:00",
+  "before": {
+    "cpu_limit_pct": 30,
+    "survival_duration_sec": 7.24,
+    "peak_cpu_pct": 152,
+    "status": "Still Running (Unexpected)",
+    "watchdog_log": "No watchdog termination log"
+  },
+  "after": {
+    "cpu_limit_pct": 95,
+    "survival_duration_sec": 4.66,
+    "peak_cpu_pct": 121,
+    "status": "Active & Serving (Normal)",
+    "watchdog_log": "None (No SIGTERM trigger)"
+  }
+}
